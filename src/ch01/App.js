@@ -8,9 +8,9 @@
   3. JSX 안에 값 또는 변수를 사용하려면 {}표현식을 사용해야한다.
 */
 import "./App.css";
-import Box from "./components/Box";
-import CustomInput from "./components/CustomInput";
-import Hello from "./components/Hello";
+import Box from "../components/Box";
+import CustomInput from "../components/CustomInput";
+import Hello from "../components/Hello";
 
 function App() {
   const name = "김준일";
