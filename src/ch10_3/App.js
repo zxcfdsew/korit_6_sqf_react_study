@@ -1,7 +1,15 @@
+import Swal from "sweetalert2";
 import "./App.css";
 import { useRef, useState } from "react";
 
 function App() {
+    const test = {
+        a: "aaa",
+        b: "bbb"
+    }
+    // 객체인 데이터도 [] 안에 값을 넣어주면 key값으로 가져올 수 있다.(문자열이 들어와야 함)
+    // console.log(test.a);
+    // console.log(test["a"]);
 
     const emptyUser = {
         id: "",
@@ -48,8 +56,46 @@ function App() {
         });
     }
 
-    const handleDeleteUser = (e) => {
-        setUserList(userList.filter(({id}) => id !== parseInt(e.target.value)));
+    const handleEditClick = (key, index) => {
+        Swal.fire({
+            title: `${key} edit`,
+            input: "text",
+            inputValue: userList[index][key],
+            showCancelButton: true,
+            cancelButtonText: "취소",
+            confirmButtonText: "확인"
+        }).then(result => {
+            if (result.isConfirmed) {
+                setUserList(userList => [ ...userList.map((user, i) => {
+                    if (i === index) {
+                        return {
+                            ...user,
+                            [key]: result.value
+                        }
+                    }
+                    return user;
+                 })]);
+            }
+        });
+    }
+
+    const handleDeleteClick = (e) => {
+        Swal.fire({
+            title: "사용자 삭제",
+            text: "해당 사용자를 삭제하시겠습니까?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "삭제",
+            confirmButtonColor: "red",
+            cancelButtonText: "취소"
+        }).then(result => {
+            if(result.isConfirmed) {
+                setUserList(userList.filter(({id}) => id !== parseInt(e.target.value)));
+            }
+        });
+        // if(window.confirm("해당 사용자를 삭제하시겠습니까?")) {
+        //     // setUserList(userList => [ ...userList.filter((user, index) => index !== parseInt(e.target.value))]);
+        // }
     }
 
     const getNewId = () => {
@@ -77,6 +123,8 @@ function App() {
                     <th>username</th>
                     <th>password</th>
                     <th>name</th>
+                    <th>edit</th>
+                    <th>delete</th>
                 </tr>
             </thead>
             <tbody>
@@ -85,11 +133,15 @@ function App() {
                     return (
                         <tr key={user.id}>
                             <th>{index + 1}</th>
-                            <td>{user.username}</td>
-                            <td>{user.password}</td>
-                            <td>{user.name}</td>
+                            {/* onClick안에는 함수호출이 아니라 함수 정의가 들어가야함 */}
+                            <td onClick={() => handleEditClick("username", index)} >{user.username}</td>
+                            <td onClick={() => handleEditClick("password", index)} >{user.password}</td>
+                            <td onClick={() => handleEditClick("name", index)} >{user.name}</td>
                             <td>
-                                <button onClick={handleDeleteUser} ref={inputRef.delete} value={user.id}>삭제</button>
+                                <button value={index}>edit</button>
+                            </td>
+                            <td>
+                                <button onClick={handleDeleteClick} ref={inputRef.delete} value={user.id}>delete</button>
                             </td>
                         </tr>
                     )})}
