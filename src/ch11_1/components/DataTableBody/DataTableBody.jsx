@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./style.css";
 
-function DataTableBody({ mode, setMode, products, setProducts, isDeleting, setDeleting }) {
+function DataTableBody({ mode, setMode, products, setProducts, isDeleting, setDeleting, setEditProductId }) {
     const [ viewProducts, setViewProducts ] = useState([]);
     const [ checkedAll, setCheckedAll ] = useState(false);
 
@@ -35,6 +35,13 @@ function DataTableBody({ mode, setMode, products, setProducts, isDeleting, setDe
             setDeleting(false);
         }
     }, [isDeleting]);
+
+    useEffect(() => {
+        if(mode === 2) {
+            const [ selectedProduct ] = viewProducts.filter(product => product.isChecked);
+            setEditProductId(!selectedProduct ? 0 : selectedProduct.id);
+        }
+    }, [viewProducts]);
 
     const resetViewProducts = () => {
         // setter에서 매개변수를 지정하면 viewProducts를 들고옴

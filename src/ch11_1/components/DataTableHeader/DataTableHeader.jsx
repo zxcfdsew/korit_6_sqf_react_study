@@ -1,8 +1,8 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./style.css";
 import Swal from "sweetalert2";
 
-function DataTableHeader({ mode, setMode, setProducts, setDeleting }) {
+function DataTableHeader({ mode, setMode, products, setProducts, setDeleting, editProductId }) {
     const emptyProduct = {
         id: "",
         productName: "",
@@ -19,6 +19,12 @@ function DataTableHeader({ mode, setMode, setProducts, setDeleting }) {
     }
 
     const [ inputData, setInputData ] = useState({ ...emptyProduct });
+
+    useEffect(() => {
+        // 값이 하나만 들어올거기 때문에 비구조할당으로 값을 받아옴
+        const [ product ] = products.filter(product => product.id === editProductId);
+        setInputData(!product ? { ...emptyProduct } : { ...product });
+    }, [editProductId]);
 
     const handleInputChange = (e) => {
         // 이렇게 하면 객체 리턴 (소괄호로 묶으면 객체 리턴)
@@ -71,7 +77,29 @@ function DataTableHeader({ mode, setMode, setProducts, setDeleting }) {
             resetMode();
         }
         if(mode === 2) {
-            alert("상품수정");
+            Swal.fire({
+                title: "상품 정보 수정",
+                showCancelButton: true,
+                confirmButtonText: "확인",
+                cancelButtonText: "취소" 
+            }).then(result => {
+                if(result.isConfirmed) {
+                    setProducts(products => [ 
+                        ...products.map(product => {
+                            if(product.id === editProductId) {
+                                const { id, ...rest } = inputData;
+                                return {
+                                    ...product,
+                                    ...rest
+                                }
+                            }
+                            return product;
+                        })
+                    ]);
+                    resetMode();
+                }
+                return 10;
+            }).then(num => console.log(num));
         }
         if(mode === 3) {
             Swal.fire({
